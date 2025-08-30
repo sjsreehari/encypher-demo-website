@@ -41,6 +41,16 @@ function App() {
     }
   );
 
+  // Function to get the actual encrypted string from localStorage
+  const getEncryptedString = () => {
+    try {
+      const rawData = localStorage.getItem("demo-key");
+      return rawData || "No encrypted data found";
+    } catch (error) {
+      return "Error reading from localStorage";
+    }
+  };
+
   // Function to manually decrypt data
   const handleManualDecrypt = async () => {
     if (!decryptSecret || !decryptKey) {
@@ -91,6 +101,14 @@ function App() {
   const testCorrectSecret = () => {
     setDecryptSecret(secret);
     setDecryptKey("demo-key");
+  };
+
+  // Function to handle decrypt data with auto-prepare
+  const handleDecryptData = async () => {
+    // First prepare for decryption
+    await handleExportData();
+    // Then perform decryption
+    await handleManualDecrypt();
   };
 
   return (
@@ -186,12 +204,6 @@ function App() {
               )}
             </div>
           </div>
-
-          <div className="form-group" style={{ marginTop: "1rem" }}>
-            <button onClick={handleExportData} disabled={!input}>
-              Prepare for Decryption
-            </button>
-          </div>
         </div>
 
         {/* Decryption Section */}
@@ -230,7 +242,7 @@ function App() {
           <div className="form-group">
             <div className="form-row">
               <button 
-                onClick={handleManualDecrypt}
+                onClick={handleDecryptData}
                 disabled={!decryptSecret || !decryptKey}
               >
                 Decrypt Data
@@ -283,6 +295,18 @@ function App() {
               )}
             </div>
           </div>
+        </div>
+
+        {/* Debug Info Section */}
+        <div className="card">
+          <h2 className="section-title">Debug Information</h2>
+          
+          <div className="status-display">
+            <span className="status-label">Raw Encrypted Data (from localStorage):</span>
+            <div className="status-value" style={{ fontSize: "0.75rem", wordBreak: "break-all" }}>
+              {getEncryptedString()}
+            </div>
+          </div>
 
           <div className="status-display" style={{ marginTop: "1rem" }}>
             <span className="status-label">Debug Info:</span>
@@ -290,7 +314,7 @@ function App() {
               <div>Encryption Secret: {secret}</div>
               <div>Decryption Secret: {decryptSecret}</div>
               <div>Storage Key: {decryptKey}</div>
-              <div>Encrypted Value: {value}</div>
+              <div>Decrypted Value: {value}</div>
               <div>Decrypt Value: {decryptValue}</div>
             </div>
           </div>

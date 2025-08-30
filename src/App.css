@@ -17,7 +17,7 @@
 
 .sections-container {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 2rem;
   width: 100%;
   margin-bottom: 2rem;
@@ -184,6 +184,13 @@
 }
 
 /* Responsive design */
+@media (max-width: 1024px) {
+  .sections-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+}
+
 @media (max-width: 768px) {
   .sections-container {
     grid-template-columns: 1fr;
