@@ -32,10 +32,10 @@ function App() {
 
   // Create a separate storage instance for decryption testing
   const [decryptValue, decryptSetValue, decryptRemove] = useEncryptedStorage(
-    decryptKey || "decrypt-test",
+    decryptKey || "demo-key",
     null,
     {
-      secret: decryptSecret,
+      secret: decryptSecret || secret,
       storage: "local",
       onError: (e) => setDecryptError(`Decryption failed: ${e?.message}`),
     }
@@ -84,6 +84,12 @@ function App() {
   // Function to test decryption with wrong secret
   const testWrongSecret = () => {
     setDecryptSecret("wrong-secret");
+    setDecryptKey("demo-key");
+  };
+
+  // Function to test decryption with correct secret
+  const testCorrectSecret = () => {
+    setDecryptSecret(secret);
     setDecryptKey("demo-key");
   };
 
@@ -237,7 +243,10 @@ function App() {
 
           <div className="form-group">
             <div className="form-row">
-              <button onClick={testWrongSecret} style={{ marginRight: "0.5rem" }}>
+              <button onClick={testCorrectSecret} style={{ marginRight: "0.5rem" }}>
+                Test Correct Secret
+              </button>
+              <button onClick={testWrongSecret}>
                 Test Wrong Secret
               </button>
             </div>
@@ -282,6 +291,7 @@ function App() {
               <div>Decryption Secret: {decryptSecret}</div>
               <div>Storage Key: {decryptKey}</div>
               <div>Encrypted Value: {value}</div>
+              <div>Decrypt Value: {decryptValue}</div>
             </div>
           </div>
         </div>
