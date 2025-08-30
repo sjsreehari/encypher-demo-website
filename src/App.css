@@ -1,35 +1,41 @@
 #root {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
-  min-height: 100vh;
+  padding: 1rem;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .app-container {
   width: 100%;
   max-width: 1200px;
   text-align: center;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .sections-container {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 2rem;
+  gap: 1rem;
   width: 100%;
-  margin-bottom: 2rem;
+  flex: 1;
+  min-height: 0;
 }
 
 .app-header {
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+  flex-shrink: 0;
 }
 
 .app-title {
-  margin-bottom: 0.5rem;
-  font-size: 2.5rem;
+  margin-bottom: 0.25rem;
+  font-size: 2rem;
   font-weight: 700;
   background: linear-gradient(135deg, #ffffff 0%, #e5e7eb 100%);
   -webkit-background-clip: text;
@@ -39,12 +45,12 @@
 
 .app-subtitle {
   color: #9ca3af;
-  font-size: 1.1rem;
+  font-size: 1rem;
   margin: 0;
 }
 
 .section-title {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   font-size: 1.25rem;
   font-weight: 600;
   color: #ffffff;
@@ -54,11 +60,13 @@
 .card {
   background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
   border: 1px solid #374151;
-  border-radius: 16px;
-  padding: 2rem;
+  border-radius: 12px;
+  padding: 1.5rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(10px);
-  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   transition: all 0.3s ease;
   animation: fadeInUp 0.6s ease-out;
 }
@@ -75,7 +83,7 @@
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .form-group:last-child {
@@ -85,7 +93,7 @@
 .form-row {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
 }
 
@@ -98,15 +106,15 @@
 
 .form-input {
   flex: 1;
-  min-width: 200px;
+  min-width: 150px;
 }
 
 .form-input-small {
-  width: 100px;
+  width: 80px;
 }
 
 .form-input-medium {
-  width: 150px;
+  width: 120px;
 }
 
 .form-textarea {
@@ -120,7 +128,7 @@
   color: #ffffff;
   transition: all 0.2s ease;
   resize: vertical;
-  min-height: 80px;
+  min-height: 60px;
 }
 
 .form-textarea:focus {
@@ -134,11 +142,12 @@
 }
 
 .status-display {
-  margin-top: 1.5rem;
-  padding: 1rem;
+  margin-top: 1rem;
+  padding: 0.75rem;
   border-radius: 8px;
   background: rgba(0, 0, 0, 0.2);
   border: 1px solid #374151;
+  flex-shrink: 0;
 }
 
 .status-label {
@@ -150,8 +159,10 @@
 .status-value {
   word-break: break-all;
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-  font-size: 0.875rem;
-  line-height: 1.5;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  max-height: 100px;
+  overflow-y: auto;
 }
 
 .status-success {
@@ -168,9 +179,10 @@
 }
 
 .footer {
-  margin-top: 2rem;
+  margin-top: 1rem;
   color: #6b7280;
   font-size: 0.875rem;
+  flex-shrink: 0;
 }
 
 .footer a {
@@ -187,24 +199,22 @@
 @media (max-width: 1024px) {
   .sections-container {
     grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+    gap: 1rem;
+  }
+  
+  .card {
+    padding: 1rem;
   }
 }
 
 @media (max-width: 768px) {
   .sections-container {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-}
-
-@media (max-width: 640px) {
-  #root {
-    padding: 1rem;
+    gap: 1rem;
   }
   
   .card {
-    padding: 1.5rem;
+    padding: 1rem;
   }
   
   .form-row {
@@ -217,6 +227,6 @@
   }
   
   .app-title {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
 }

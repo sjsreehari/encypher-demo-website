@@ -1,6 +1,7 @@
 
 import React, { useState } from "react";
 import { useEncryptedStorage } from "encypher";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "./App.css";
 
 function App() {
@@ -133,8 +134,12 @@ function App() {
                 className="form-input"
                 placeholder="Enter your secret key"
               />
-              <button onClick={() => setShowSecret(s => !s)}>
-                {showSecret ? "Hide" : "Show"}
+              <button 
+                onClick={() => setShowSecret(s => !s)}
+                style={{ padding: "0.75rem", minWidth: "auto" }}
+                title={showSecret ? "Hide secret" : "Show secret"}
+              >
+                {showSecret ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
               </button>
             </div>
           </div>
@@ -150,7 +155,7 @@ function App() {
                 className="form-input-small"
                 placeholder="0"
               />
-              <span style={{ color: "#9ca3af" }}>seconds (0 = no expiry)</span>
+              <span style={{ color: "#9ca3af", fontSize: "0.875rem" }}>seconds (0 = no expiry)</span>
             </div>
           </div>
 
@@ -220,8 +225,12 @@ function App() {
                 className="form-input"
                 placeholder="Enter secret key to decrypt"
               />
-              <button onClick={() => setShowDecryptSecret(s => !s)}>
-                {showDecryptSecret ? "Hide" : "Show"}
+              <button 
+                onClick={() => setShowDecryptSecret(s => !s)}
+                style={{ padding: "0.75rem", minWidth: "auto" }}
+                title={showDecryptSecret ? "Hide secret" : "Show secret"}
+              >
+                {showDecryptSecret ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
               </button>
             </div>
           </div>
