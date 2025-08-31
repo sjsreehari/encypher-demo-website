@@ -4,20 +4,7 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    react({
-      babel: {
-        // Force JSX transform for .js files in encypher
-        include: [
-          /encypher[\\/]src[\\/]components[\/].*\.js$/
-        ],
-        presets: [
-          [
-            '@babel/preset-react',
-            { runtime: 'automatic' }
-          ]
-        ]
-      }
-    })
+    react()
   ],
   optimizeDeps: {
     include: ['encypher'],
