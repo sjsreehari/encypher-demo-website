@@ -1,7 +1,6 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useEncryptedStorage } from "encypher";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "./App.css";
 
 function App() {
@@ -13,7 +12,7 @@ function App() {
   
   // Decrypt section states
   const [decryptSecret, setDecryptSecret] = useState("");
-  const [decryptKey, setDecryptKey] = useState("");
+  const [decryptKey, setDecryptKey] = useState("demo-key");
   const [decryptedResult, setDecryptedResult] = useState(null);
   const [decryptError, setDecryptError] = useState("");
   const [showDecryptSecret, setShowDecryptSecret] = useState(false);
@@ -33,14 +32,27 @@ function App() {
 
   // Create a separate storage instance for decryption testing
   const [decryptValue, decryptSetValue, decryptRemove] = useEncryptedStorage(
-    decryptKey || "demo-key",
+    decryptKey,
     null,
     {
-      secret: decryptSecret || secret,
+      secret: decryptSecret,
       storage: "local",
-      onError: (e) => setDecryptError(`Decryption failed: ${e?.message}`),
+      onError: (e) => {
+        setDecryptError(`Decryption failed: ${e?.message}`);
+        setDecryptedResult(null);
+      },
     }
   );
+
+  // Effect to update decrypted result when decryptValue changes
+  useEffect(() => {
+    if (decryptSecret && decryptKey) {
+      setDecryptedResult(decryptValue);
+      if (decryptValue !== null) {
+        setDecryptError("");
+      }
+    }
+  }, [decryptValue, decryptSecret, decryptKey]);
 
   // Function to get the actual encrypted string from localStorage
   const getEncryptedString = () => {
@@ -52,42 +64,60 @@ function App() {
     }
   };
 
-  // Function to manually decrypt data
-  const handleManualDecrypt = async () => {
+  // Function to handle store value
+  const handleStoreValue = async () => {
+    if (!input.trim()) {
+      alert("Please enter a value to store");
+      return;
+    }
+    try {
+      await setValue(input);
+      // Auto-fill decrypt section for easier testing
+      setDecryptSecret(secret);
+      setDecryptKey("demo-key");
+    } catch (error) {
+      alert(`Store failed: ${error.message}`);
+    }
+  };
+
+  // Function to handle re-encrypt
+  const handleReencrypt = async () => {
+    if (!newSecret.trim()) {
+      alert("Please enter a new secret");
+      return;
+    }
+    try {
+      await reencrypt(newSecret);
+      setSecret(newSecret);
+      setNewSecret("");
+      // Update decrypt secret if it matches the old one
+      if (decryptSecret === secret) {
+        setDecryptSecret(newSecret);
+      }
+    } catch (error) {
+      alert(`Re-encrypt failed: ${error.message}`);
+    }
+  };
+
+  // Function to handle decrypt data
+  const handleDecryptData = async () => {
     if (!decryptSecret || !decryptKey) {
       setDecryptError("Please provide both secret and storage key");
       return;
     }
 
-    try {
-      setDecryptError("");
-      setDecryptedResult(null);
-      
-      // The decryption will happen automatically when the useEncryptedStorage hook
-      // tries to read the value with the provided secret
-      setDecryptedResult(decryptValue);
-    } catch (error) {
-      setDecryptError(`Decryption failed: ${error.message}`);
-      setDecryptedResult(null);
-    }
-  };
-
-  // Function to export current encrypted data by storing it with a known key
-  const handleExportData = async () => {
-    try {
-      // Store the current input with a known key that can be used for decryption
-      await setValue(input);
-      setDecryptKey("demo-key"); // Set the key to the same one used for encryption
-      setDecryptSecret(secret); // Set the secret to the same one used for encryption
-    } catch (error) {
-      alert(`Export failed: ${error.message}`);
-    }
+    // Clear previous results
+    setDecryptedResult(null);
+    setDecryptError("");
+    
+    // The decryption will happen automatically via the useEncryptedStorage hook
+    // and the useEffect will update the result
   };
 
   // Function to clear decrypt section
   const clearDecryptSection = () => {
     setDecryptSecret("");
-    setDecryptKey("");
+    setDecryptKey("demo-key");
     setDecryptedResult(null);
     setDecryptError("");
   };
@@ -96,33 +126,29 @@ function App() {
   const testWrongSecret = () => {
     setDecryptSecret("wrong-secret");
     setDecryptKey("demo-key");
+    setDecryptedResult(null);
+    setDecryptError("");
   };
 
   // Function to test decryption with correct secret
   const testCorrectSecret = () => {
     setDecryptSecret(secret);
     setDecryptKey("demo-key");
-  };
-
-  // Function to handle decrypt data with auto-prepare
-  const handleDecryptData = async () => {
-    // First prepare for decryption
-    await handleExportData();
-    // Then perform decryption
-    await handleManualDecrypt();
+    setDecryptedResult(null);
+    setDecryptError("");
   };
 
   return (
     <div className="app-container">
       <div className="app-header">
         <h1 className="app-title">Encypher Demo</h1>
-        <p className="app-subtitle">Encrypted localStorage with React</p>
+        <p className="app-subtitle">Secure localStorage encryption</p>
       </div>
       
       <div className="sections-container">
         {/* Encryption Section */}
         <div className="card">
-          <h2 className="section-title">Encryption</h2>
+          <h2 className="section-title">Encrypt</h2>
           
           <div className="form-group">
             <label className="form-label">Secret Key</label>
@@ -132,20 +158,20 @@ function App() {
                 value={secret}
                 onChange={e => setSecret(e.target.value)}
                 className="form-input"
-                placeholder="Enter your secret key"
+                placeholder="Enter secret key"
               />
               <button 
                 onClick={() => setShowSecret(s => !s)}
-                style={{ padding: "0.75rem", minWidth: "auto" }}
-                title={showSecret ? "Hide secret" : "Show secret"}
+                style={{ padding: "0.5rem", minWidth: "auto" }}
+                title={showSecret ? "Hide" : "Show"}
               >
-                {showSecret ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
+                {showSecret ? "Hide" : "Show"}
               </button>
             </div>
           </div>
 
           <div className="form-group">
-            <label className="form-label">TTL (Time To Live)</label>
+            <label className="form-label">TTL (seconds)</label>
             <div className="form-row">
               <input
                 type="number"
@@ -155,7 +181,7 @@ function App() {
                 className="form-input-small"
                 placeholder="0"
               />
-              <span style={{ color: "#9ca3af", fontSize: "0.875rem" }}>seconds (0 = no expiry)</span>
+              <span style={{ color: "#666", fontSize: "0.7rem" }}>0 = no expiry</span>
             </div>
           </div>
 
@@ -167,32 +193,30 @@ function App() {
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 className="form-input"
-                placeholder="Enter value to encrypt and store"
+                placeholder="Enter value to encrypt"
               />
-              <button onClick={async () => await setValue(input)}>
-                Set Value
+              <button onClick={handleStoreValue} disabled={!input.trim()}>
+                Store
               </button>
             </div>
           </div>
 
           <div className="form-group">
-            <label className="form-label">Re-encrypt with New Secret</label>
+            <label className="form-label">Re-encrypt</label>
             <div className="form-row">
               <button onClick={remove} style={{ marginRight: "0.5rem" }}>
                 Remove
               </button>
               <input
                 type="text"
-                placeholder="New secret key"
+                placeholder="New secret"
                 value={newSecret}
                 onChange={e => setNewSecret(e.target.value)}
                 className="form-input-medium"
               />
               <button 
-                onClick={async () => { 
-                  if (newSecret) await reencrypt(newSecret); 
-                }}
-                disabled={!newSecret}
+                onClick={handleReencrypt}
+                disabled={!newSecret.trim()}
               >
                 Re-encrypt
               </button>
@@ -200,7 +224,7 @@ function App() {
           </div>
 
           <div className="status-display">
-            <span className="status-label">Stored Value:</span>
+            <span className="status-label">Stored Value</span>
             <div className={`status-value ${value == null ? 'status-error' : 'status-success'}`}>
               {value == null ? (
                 <em>No value stored</em>
@@ -213,24 +237,24 @@ function App() {
 
         {/* Decryption Section */}
         <div className="card">
-          <h2 className="section-title">Decryption</h2>
+          <h2 className="section-title">Decrypt</h2>
           
           <div className="form-group">
-            <label className="form-label">Secret Key for Decryption</label>
+            <label className="form-label">Secret Key</label>
             <div className="form-row">
               <input
                 type={showDecryptSecret ? "text" : "password"}
                 value={decryptSecret}
                 onChange={e => setDecryptSecret(e.target.value)}
                 className="form-input"
-                placeholder="Enter secret key to decrypt"
+                placeholder="Enter secret key"
               />
               <button 
                 onClick={() => setShowDecryptSecret(s => !s)}
-                style={{ padding: "0.75rem", minWidth: "auto" }}
-                title={showDecryptSecret ? "Hide secret" : "Show secret"}
+                style={{ padding: "0.5rem", minWidth: "auto" }}
+                title={showDecryptSecret ? "Hide" : "Show"}
               >
-                {showDecryptSecret ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
+                {showDecryptSecret ? "Hide" : "Show"}
               </button>
             </div>
           </div>
@@ -243,7 +267,7 @@ function App() {
                 value={decryptKey}
                 onChange={e => setDecryptKey(e.target.value)}
                 className="form-input"
-                placeholder="Enter storage key (e.g., demo-key)"
+                placeholder="e.g., demo-key"
               />
             </div>
           </div>
@@ -254,7 +278,7 @@ function App() {
                 onClick={handleDecryptData}
                 disabled={!decryptSecret || !decryptKey}
               >
-                Decrypt Data
+                Decrypt
               </button>
               <button onClick={clearDecryptSection} style={{ marginLeft: "0.5rem" }}>
                 Clear
@@ -265,17 +289,17 @@ function App() {
           <div className="form-group">
             <div className="form-row">
               <button onClick={testCorrectSecret} style={{ marginRight: "0.5rem" }}>
-                Test Correct Secret
+                Test Correct
               </button>
               <button onClick={testWrongSecret}>
-                Test Wrong Secret
+                Test Wrong
               </button>
             </div>
           </div>
 
           {decryptError && (
             <div className="status-display error">
-              <span className="status-label">Error:</span>
+              <span className="status-label">Error</span>
               <div className="status-value status-error">
                 {decryptError}
               </div>
@@ -284,7 +308,7 @@ function App() {
 
           {decryptedResult !== null && (
             <div className="status-display">
-              <span className="status-label">Decrypted Result:</span>
+              <span className="status-label">Result</span>
               <div className="status-value status-success">
                 {typeof decryptedResult === 'object' 
                   ? JSON.stringify(decryptedResult, null, 2)
@@ -294,8 +318,8 @@ function App() {
             </div>
           )}
 
-          <div className="status-display" style={{ marginTop: "1rem" }}>
-            <span className="status-label">Current Decrypt Value:</span>
+          <div className="status-display" style={{ marginTop: "0.75rem" }}>
+            <span className="status-label">Current Value</span>
             <div className={`status-value ${decryptValue == null ? 'status-error' : 'status-success'}`}>
               {decryptValue == null ? (
                 <em>No value found</em>
@@ -308,23 +332,23 @@ function App() {
 
         {/* Debug Info Section */}
         <div className="card">
-          <h2 className="section-title">Debug Information</h2>
+          <h2 className="section-title">Debug</h2>
           
           <div className="status-display">
-            <span className="status-label">Raw Encrypted Data (from localStorage):</span>
-            <div className="status-value" style={{ fontSize: "0.75rem", wordBreak: "break-all" }}>
+            <span className="status-label">Raw Data</span>
+            <div className="status-value" style={{ fontSize: "0.6rem", wordBreak: "break-all" }}>
               {getEncryptedString()}
             </div>
           </div>
 
-          <div className="status-display" style={{ marginTop: "1rem" }}>
-            <span className="status-label">Debug Info:</span>
-            <div className="status-value" style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
-              <div>Encryption Secret: {secret}</div>
-              <div>Decryption Secret: {decryptSecret}</div>
-              <div>Storage Key: {decryptKey}</div>
-              <div>Decrypted Value: {value}</div>
-              <div>Decrypt Value: {decryptValue}</div>
+          <div className="status-display" style={{ marginTop: "0.75rem" }}>
+            <span className="status-label">Info</span>
+            <div className="status-value" style={{ fontSize: "0.6rem", color: "#666" }}>
+              <div><strong>Enc Secret:</strong> {secret}</div>
+              <div><strong>Dec Secret:</strong> {decryptSecret}</div>
+              <div><strong>Storage Key:</strong> {decryptKey}</div>
+              <div><strong>Value:</strong> {value}</div>
+              <div><strong>Dec Value:</strong> {decryptValue}</div>
             </div>
           </div>
         </div>
