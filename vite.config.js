@@ -1,32 +1,29 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    react()
-  ],
+  plugins: [react()],
   optimizeDeps: {
-    include: ['encypher'],
+    esbuildOptions: {
+      loader: {
+        '.js': 'jsx'
+      },
+      include: ['encypher']
+    }
   },
   build: {
     commonjsOptions: {
       include: [/node_modules/],
-      transformMixedEsModules: true,
+      transformMixedEsModules: true
     },
     rollupOptions: {
-      external: [],
-    },
+      external: []
+    }
   },
   define: {
-    global: 'globalThis',
+    global: 'globalThis'
   },
   ssr: {
-    noExternal: ['encypher'],
-  },
-  // resolve: {
-  //   alias: {
-  //     'encypher': 'encypher/dist/index.js',
-  //   },
-  // },
+    noExternal: ['encypher']
+  }
 });
