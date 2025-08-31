@@ -24,4 +24,12 @@ export default defineConfig({
   define: {
     global: 'globalThis',
   },
+  ssr: {
+    noExternal: ['encypher'],
+  },
+  resolve: {
+    alias: {
+      'encypher': 'encypher/dist/index.js',
+    },
+  },
 })
