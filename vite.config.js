@@ -5,12 +5,30 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
+    include: ['encypher'],
     esbuildOptions: {
       loader: {
         '.js': 'jsx',
       },
-      // Only apply to encypher package
-      // No 'include' option here
+    },
+  },
+  build: {
+    commonjsOptions: {
+      include: [/node_modules/],
+      transformMixedEsModules: true,
+    },
+    rollupOptions: {
+      external: [],
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+        },
+      },
+    },
+  },
+  resolve: {
+    alias: {
+      // Ensure proper resolution of encypher package
     },
   },
 })
