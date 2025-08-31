@@ -12,7 +12,7 @@ export default defineConfig({
         ],
         presets: [
           [
-            require.resolve('@babel/preset-react'),
+            '@babel/preset-react',
             { runtime: 'automatic' }
           ]
         ]
@@ -21,11 +21,6 @@ export default defineConfig({
   ],
   optimizeDeps: {
     include: ['encypher'],
-    esbuildOptions: {
-      loader: {
-        '.js': 'jsx',
-      },
-    },
   },
   build: {
     commonjsOptions: {
