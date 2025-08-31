@@ -27,9 +27,9 @@ export default defineConfig({
   ssr: {
     noExternal: ['encypher'],
   },
-  resolve: {
-    alias: {
-      'encypher': 'encypher/dist/index.js',
-    },
-  },
+  // resolve: {
+  //   alias: {
+  //     'encypher': 'encypher/dist/index.js',
+  //   },
+  // },
 })
