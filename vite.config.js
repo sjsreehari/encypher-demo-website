@@ -1,9 +1,23 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { viteBabel } from 'vite-plugin-babel';
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    viteBabel({
+      filter: /encypher\/src\/components\/.*\.js$/,
+      babelConfig: {
+        presets: [
+          [
+            '@babel/preset-react',
+            { runtime: 'automatic' }
+          ]
+        ]
+      }
+    })
+  ],
   optimizeDeps: {
     include: ['encypher'],
     esbuildOptions: {
@@ -32,4 +46,4 @@ export default defineConfig({
   //     'encypher': 'encypher/dist/index.js',
   //   },
   // },
-})
+});
