@@ -19,16 +19,9 @@ export default defineConfig({
     },
     rollupOptions: {
       external: [],
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-        },
-      },
     },
   },
-  resolve: {
-    alias: {
-      // Ensure proper resolution of encypher package
-    },
+  define: {
+    global: 'globalThis',
   },
 })
