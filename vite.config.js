@@ -1,17 +1,18 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { viteBabel } from 'vite-plugin-babel';
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    react(),
-    viteBabel({
-      filter: /encypher\/src\/components\/.*\.js$/,
-      babelConfig: {
+    react({
+      babel: {
+        // Force JSX transform for .js files in encypher
+        include: [
+          /encypher[\\/]src[\\/]components[\/].*\.js$/
+        ],
         presets: [
           [
-            '@babel/preset-react',
+            require.resolve('@babel/preset-react'),
             { runtime: 'automatic' }
           ]
         ]
